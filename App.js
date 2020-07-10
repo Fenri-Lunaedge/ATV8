@@ -1,81 +1,53 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, ScrollView, FlatList } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { StyleSheet, Text, View, Button, TextInput, FlatList } from 'react-native';
 
-import LembreteItem from './components/LembreteItem';
-import LembreteInput from './components/LembreteInput';
-
+import ContactItem from './components/ContactItem';
+import ContactInput from './components/ContactInput';
 
 export default function App() {
+ 
+  const [contacts, setContacts] = useState ([]);
+  const [contactsCount, setContactsCount] = useState(0);
 
-  //const [lembrete, setLembrete] = useState('');
-  const [lembretes, setLembretes] = useState([]);
-
-  const [contadorLembretes, setContadorLembretes] = useState(0);
-
-  //const capturarLembrete = (digitado) => {
-  //   setLembrete(digitado);
-  // }
-
-  const adicionarLembrete = (lembrete) => {
-    setLembretes(lembretes => {
-      setContadorLembretes(contadorLembretes + 1);
-      return [{ key: contadorLembretes.toString(), value: lembrete }, ...lembretes];
-    })
-    console.log(lembrete);
+  // C do CRUD
+  const AddContact = (name, phone) => {
+    var contact = name + " || " + phone 
+    setContacts(
+        contacts => {
+          setContactsCount(contactsCount ++);
+          return [{ key: contactsCount.toString(), value: contact }, ...contacts];
+        })
+       // console.log(lembrete);  
   }
 
-  const apagarLembretes = () => {
-    setLembretes([]);
-  }
-
-  const removerLembrete = (keyASerRemovida) => {
-    setLembretes(lembretes => {
-      return lembretes.filter((lembrete) => {
-        return lembrete.key !== keyASerRemovida
+// R do CRUD
+  const removeContact = (keyToRemove) => {
+    setContacts(contacts => {
+      return contacts.filter((contact) => {
+          return contact.key !== keyToRemove
       })
     })
   }
-
-
-  return (
+  
+  return (  
     <View style={styles.telaPrincipalView}>
-
-      <LembreteInput onAdicionarLembrete={adicionarLembrete} onApagarTudo={apagarLembretes} />
-
-      <View>
-        <FlatList
-          data={lembretes}
-          renderItem={
-            lembrete => (
-              <LembreteItem
-                chave={lembrete.item.key}
-                lembrete={lembrete.item.value}
-                onDelete={removerLembrete} />
-            )
-          }
-        />
-        {/*aqui será exibida a lista de lembretes
-          <ScrollView>
-
-            {
-              lembretes.map(lembrete =>
-                <View
-                  key={lembrete}
-                  style={styles.itemNaLista}>
-                  <Text style={{ fontSize: 16, textAlign: 'center' }}>{lembrete}</Text>
-                </View>
-              )
-            }
-
-          </ScrollView>
-          */
-        }
-      </View>
-
-    </View>
-  );
+       <ContactInput onAddContact={AddContact}  />   
+    <View>
+      <FlatList data={contacts} renderItem={
+         contact => (
+           <ContactItem 
+             chave={contact.item.key} 
+             contact={contact.item.value}
+             onDelete={removeContact} />
+          )
+      }
+      />
+   </View>
+  </View>
+       
+);
 }
-
+//Se alguém quiser mudar, está com as cores 
 const styles = StyleSheet.create({
   itemNaLista: {
     padding: 16,
